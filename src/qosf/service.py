@@ -10,6 +10,8 @@ import pandas as pd
 from .features import per_trace_features
 
 WINDOW_S = 30          # seconds of history needed by the rolling features
+NUMERIC = ["thr", "RSRP", "RSRQ", "SNR", "CQI", "RSSI", "NRxRSRP", "NRxRSRQ",
+           "Latitude", "Longitude", "Speed", "CellID"]
 
 
 class Forecaster:
@@ -21,6 +23,10 @@ class Forecaster:
     def predict(self, records: list) -> dict:
         w = pd.DataFrame(records)
         w["time"] = pd.to_datetime(w["time"])
+        # a KPI missing over the whole window arrives as JSON null -> object dtype;
+        # force every KPI to float so that missing values become NaN
+        for c in NUMERIC:
+            w[c] = pd.to_numeric(w[c], errors="coerce").astype(float) if c in w else np.nan
         w = w.sort_values("time").tail(WINDOW_S).reset_index(drop=True)
         if "missing" not in w:
             w["missing"] = False

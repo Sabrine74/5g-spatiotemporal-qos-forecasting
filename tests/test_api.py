@@ -22,6 +22,8 @@ def test_predict_endpoint(monkeypatch):
             "Latitude", "Longitude", "Speed", "CellID"]
     recs = [{**{c: (None if pd.isna(r[c]) else float(r[c])) for c in cols},
              "time": str(r["time"]), "net": r["net"]} for _, r in trace.iterrows()]
+    for rec in recs:                      # a KPI missing over the whole window
+        rec["NRxRSRQ"] = None
     r = client.post("/predict", json={"measurements": recs})
     assert r.status_code == 200
     out = r.json()

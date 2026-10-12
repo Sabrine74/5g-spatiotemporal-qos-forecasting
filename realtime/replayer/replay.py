@@ -49,6 +49,7 @@ def main():
         writer = client.write_api(write_options=SYNCHRONOUS)
         bucket = os.environ["INFLUX_BUCKET"]
 
+    print(f"Replaying {args.trace} -> API {args.api}", flush=True)
     http = httpx.Client(base_url=args.api, timeout=10)
     for _ in range(60):                                    # wait for the API to start
         try:
@@ -88,6 +89,9 @@ def main():
                 pts.append(Point("qos_alert").time(now).field("alert", alert)
                            .field("threshold", args.threshold))
                 writer.write(bucket=bucket, record=pts)
+                if step % 30 == 0:
+                    print(f"{now:%H:%M:%S} replayed {step} s  thr={rec['thr']:.1f}  "
+                          f"forecast3s={fc['forecast_h3']:.1f}  alert={alert}", flush=True)
 
             step += 1
             if args.max_steps and step >= args.max_steps:

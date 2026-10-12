@@ -1,0 +1,21 @@
+# Override: run every service on the host network and talk through localhost.
+# Use it when containers cannot reach each other on the default Docker network
+# (seen in some GitHub Codespaces):
+#   docker compose -f docker-compose.yml -f docker-compose.hostnet.yml up --build
+services:
+  influxdb:
+    network_mode: host
+    ports: !reset []
+  api:
+    network_mode: host
+    ports: !reset []
+  replayer:
+    network_mode: host
+    environment:
+      API_URL: http://localhost:8000
+      INFLUX_URL: http://localhost:8086
+  grafana:
+    network_mode: host
+    ports: !reset []
+    environment:
+      INFLUX_URL: http://localhost:8086

@@ -410,17 +410,20 @@
       },
       "options": {
         "view": {
-          "id": "fit",
-          "lat": 51.9,
-          "lon": -8.47,
-          "zoom": 13
+          "id": "coords",
+          "lat": 51.905,
+          "lon": -8.46,
+          "zoom": 12.5
         },
         "controls": {
           "showZoom": true
         },
         "basemap": {
-          "type": "default",
-          "name": "Basemap"
+          "type": "esri-xyz",
+          "name": "ArcGIS streets",
+          "config": {
+            "server": "streets"
+          }
         },
         "layers": [
           {

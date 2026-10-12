@@ -1,5 +1,7 @@
 # Real-time 5G QoS monitoring: replayer -> FastAPI forecaster -> InfluxDB -> Grafana
 #   docker compose up --build      then open http://localhost:3000 (admin / admin)
+# If containers cannot reach each other (e.g. some GitHub Codespaces), use host networking:
+#   docker compose -f docker-compose.yml -f docker-compose.hostnet.yml up --build
 services:
   influxdb:
     image: influxdb:2.7
@@ -34,6 +36,7 @@ services:
       TRACE: realtime/demo_trace.csv
       REPLAY_SPEED: "1"          # 2 = twice as fast as the real drive
       QOS_THRESHOLD: "10"        # Mbit/s needed by the service (4K video)
+      PYTHONUNBUFFERED: "1"
 
   grafana:
     image: grafana/grafana:11.3.0
@@ -45,5 +48,6 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/qos.json
+      INFLUX_URL: http://influxdb:8086      # used by the provisioned datasource
     volumes:
       - ./realtime/grafana/provisioning:/etc/grafana/provisioning
