@@ -1,0 +1,10 @@
+# pinned to the versions used to train models/qos_forecaster.joblib
+numpy==2.5.3
+pandas==3.0.5
+scikit-learn==1.9.1
+lightgbm==4.7.0
+joblib==1.6.0
+fastapi>=0.110
+uvicorn>=0.29
+httpx>=0.27
+influxdb-client>=1.40

@@ -1,0 +1,594 @@
+{
+  "uid": "qos-5g",
+  "title": "5G QoS forecasting \u2013 live",
+  "timezone": "browser",
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-10m",
+    "to": "now+10s"
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Measured throughput (Mbit/s)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"thr\") |> keep(columns: [\"_time\",\"_value\"]) |> last()"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 1,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Forecast, next 3 s (Mbit/s)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"forecast\" and r.h == \"3\") |> keep(columns: [\"_time\",\"_value\"]) |> last()"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#eda100"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 2,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "80 % interval lower bound, next 3 s",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"forecast_interval\" and r._field == \"lower\") |> keep(columns: [\"_time\",\"_value\"]) |> last()"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#0ca30c",
+                "value": 10
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 3,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "QoS status (threshold 10 Mbit/s)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"qos_alert\" and r._field == \"alert\") |> keep(columns: [\"_time\",\"_value\"]) |> last()"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OK",
+                  "color": "#0ca30c"
+                },
+                "1": {
+                  "text": "DROP PREDICTED",
+                  "color": "#d03b3b"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#d03b3b",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 4,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Downlink throughput: measured vs forecast with 80 % interval (Mbit/s)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"thr\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Measured\")"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"forecast\" and r.h == \"3\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Forecast (3 s ahead)\")"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"forecast_interval\" and r._field == \"lower\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Lower bound\")"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"forecast_interval\" and r._field == \"upper\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Upper bound\")"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#2a78d6"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Measured"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#eda100"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Forecast (3 s ahead)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#eda100"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.fillBelowTo",
+                "value": "Upper bound"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "displayName",
+                "value": "Lower bound"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "D"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#eda100"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "Upper bound"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 16,
+        "h": 10
+      },
+      "id": 5,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "geomap",
+      "title": "Vehicle position coloured by measured throughput",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and (r._field == \"Latitude\" or r._field == \"Longitude\" or r._field == \"thr\")) |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\") |> keep(columns: [\"_time\",\"Latitude\",\"Longitude\",\"thr\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "view": {
+          "id": "fit",
+          "lat": 51.9,
+          "lon": -8.47,
+          "zoom": 13
+        },
+        "controls": {
+          "showZoom": true
+        },
+        "basemap": {
+          "type": "default",
+          "name": "Basemap"
+        },
+        "layers": [
+          {
+            "type": "markers",
+            "name": "Throughput",
+            "config": {
+              "style": {
+                "size": {
+                  "fixed": 5
+                },
+                "color": {
+                  "field": "thr",
+                  "fixed": "#2a78d6"
+                },
+                "opacity": 0.8
+              }
+            },
+            "location": {
+              "mode": "coords",
+              "latitude": "Latitude",
+              "longitude": "Longitude"
+            }
+          }
+        ]
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 10
+      },
+      "id": 6,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Radio KPIs: SNR (dB) and CQI",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"SNR\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"SNR (dB)\")"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"CQI\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"CQI\")"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 1,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "id": 7,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "RSRP (dBm)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"RSRP\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"RSRP\")"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dBm",
+          "custom": {
+            "lineWidth": 1,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "id": 8,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Speed (km/h) and serving cell ID",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"Speed\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Speed (km/h)\")"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb"
+          },
+          "query": "from(bucket: \"qos\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"kpi\" and r._field == \"CellID\") |> keep(columns: [\"_time\",\"_value\"]) |> set(key: \"_field\", value: \"Cell ID\")"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 1,
+            "showPoints": "never",
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "id": 9,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb"
+      }
+    }
+  ],
+  "tags": [
+    "5G",
+    "QoS"
+  ],
+  "editable": true
+}

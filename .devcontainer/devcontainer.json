@@ -1,0 +1,14 @@
+{
+  "name": "5G QoS forecasting",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [3000, 8000, 8086],
+  "portsAttributes": {
+    "3000": {"label": "Grafana dashboard", "onAutoForward": "openBrowser"},
+    "8000": {"label": "Forecasting API"},
+    "8086": {"label": "InfluxDB"}
+  },
+  "postCreateCommand": "pip install -r requirements.txt"
+}

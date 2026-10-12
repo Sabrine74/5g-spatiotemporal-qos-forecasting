@@ -1,0 +1,13 @@
+{
+  "lightgbm_beats_persistence_folds": {
+    "1": 5,
+    "3": 5,
+    "5": 5
+  },
+  "abr_traces_with_higher_qoe_than_harmonic_mean": {
+    "LightGBM": 19,
+    "LightGBM lower bound (CQR)": 14
+  },
+  "abr_traces": 21,
+  "runtime_s": 358
+}

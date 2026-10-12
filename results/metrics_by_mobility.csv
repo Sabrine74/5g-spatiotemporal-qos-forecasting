@@ -1,0 +1,5 @@
+mobility,model,mae,rmse,n
+Driving,Persistence,15.3571,37.6663,13606
+Driving,LightGBM,14.166,30.7523,13606
+Static,Persistence,32.217,55.3582,7274
+Static,LightGBM,24.7158,38.659,7274

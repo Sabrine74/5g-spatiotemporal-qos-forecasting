@@ -1,0 +1,37 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: qos-forecast
+    folder: QoS
+    interval: 10s
+    rules:
+      - uid: qos-drop-predicted
+        title: Predicted QoS drop (next 3 s)
+        condition: C
+        for: 0s
+        noDataState: OK
+        execErrState: OK
+        annotations:
+          summary: The lower bound of the 3-second throughput forecast is below the service threshold.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 60, to: 0}
+            datasourceUid: influxdb
+            model:
+              refId: A
+              query: |
+                from(bucket: "qos")
+                  |> range(start: -1m)
+                  |> filter(fn: (r) => r._measurement == "qos_alert" and r._field == "alert")
+                  |> last()
+          - refId: B
+            datasourceUid: __expr__
+            model: {refId: B, type: reduce, expression: A, reducer: last}
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [0]}

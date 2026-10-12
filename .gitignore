@@ -1,0 +1,14 @@
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+docs/latex/*.aux
+docs/latex/*.log
+docs/latex/*.out
+docs/latex/*.fls
+docs/latex/*.fdb_latexmk
+docs/latex/*.xdv
+docs/latex/*.pdf
+!docs/latex/fig/*.pdf

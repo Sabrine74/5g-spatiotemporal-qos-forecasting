@@ -1,0 +1,49 @@
+# Real-time 5G QoS monitoring: replayer -> FastAPI forecaster -> InfluxDB -> Grafana
+#   docker compose up --build      then open http://localhost:3000 (admin / admin)
+services:
+  influxdb:
+    image: influxdb:2.7
+    ports: ["8086:8086"]
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminadmin
+      DOCKER_INFLUXDB_INIT_ORG: qos
+      DOCKER_INFLUXDB_INIT_BUCKET: qos
+      DOCKER_INFLUXDB_INIT_RETENTION: 1d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: qos-demo-token
+
+  api:
+    build: {context: ., dockerfile: realtime/Dockerfile}
+    command: uvicorn app:app --app-dir realtime/api --host 0.0.0.0 --port 8000
+    environment:
+      MODEL_PATH: /app/models/qos_forecaster.joblib
+    ports: ["8000:8000"]
+
+  replayer:
+    build: {context: ., dockerfile: realtime/Dockerfile}
+    command: python realtime/replayer/replay.py
+    depends_on: [influxdb, api]
+    restart: on-failure
+    environment:
+      API_URL: http://api:8000
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_TOKEN: qos-demo-token
+      INFLUX_ORG: qos
+      INFLUX_BUCKET: qos
+      TRACE: realtime/demo_trace.csv
+      REPLAY_SPEED: "1"          # 2 = twice as fast as the real drive
+      QOS_THRESHOLD: "10"        # Mbit/s needed by the service (4K video)
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports: ["3000:3000"]
+    depends_on: [influxdb]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/qos.json
+    volumes:
+      - ./realtime/grafana/provisioning:/etc/grafana/provisioning

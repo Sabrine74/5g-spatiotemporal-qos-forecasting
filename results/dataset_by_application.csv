@@ -1,0 +1,4 @@
+app,traces,rows,zero_share,median_mbps
+Download,21,43208,0.0378,12.0725
+Netflix,33,72832,0.7375,0.0
+Amazon_Prime,29,72671,0.3759,0.275

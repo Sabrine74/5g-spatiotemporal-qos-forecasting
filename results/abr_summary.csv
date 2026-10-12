@@ -1,0 +1,4 @@
+policy,avg_bitrate,rebuffer_ratio,switches_per_min,qoe_per_chunk
+Harmonic mean (5 s),11.1373,0.0138,10.955,5.6253
+LightGBM,18.1898,0.0282,8.5785,13.3402
+LightGBM lower bound (CQR),11.1401,0.0123,12.3777,6.3198
